@@ -1,6 +1,5 @@
 package com.dictionary;
 
-import java.io.PrintStream;
 import java.util.*;
 
 /**
@@ -18,6 +17,7 @@ public final class App {
     public static void main(String[] args) {
 
         Dictionary dic = new Dictionary();
+        @SuppressWarnings("resource")
         Scanner sc = new Scanner(System.in);
         String[] menuItem = {
                 "1 - Знайти за англ. словом",
@@ -57,8 +57,8 @@ public final class App {
                     System.out.printf("%s%s", dic.addTranslation(engWord, uaWord), "\n");
                     break;
                 default:
-                    choice = 0;
-                    return;
+                    choice=0;
+                    break;
             }
         } while (choice != 0);
     }

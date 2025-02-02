@@ -1,9 +1,8 @@
 package com.dictionary;
 
-import java.security.KeyStore.Entry;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+
 
 public class Dictionary {
     private Map<String, String> dict;
@@ -25,23 +24,16 @@ public class Dictionary {
 
         for(Map.Entry<String,String> e:dict.entrySet()){
             if(e.getKey().equals(word)){
-              return String.format("%s -- %s\n ", e.getKey(), e.getValue());
+              return String.format("%s -- %s", e.getKey(), e.getValue());
+
             }else if(e.getValue().equals(word)){
-                return String.format("%s -- %s\n ", e.getValue(),e.getKey());
+                return String.format("%s -- %s", e.getValue(),e.getKey());
             }
         }
         return "No result";
     }
 
     private boolean checkData(String eng, String ua) {
-
-        if (ua.trim().isEmpty() || eng.trim().isEmpty() || eng == null || ua == null) {
-
-            return false;
-
-        } else {
-
-            return true;
-        }
+       return (ua.trim().isEmpty() || eng.trim().isEmpty()); 
     }
 }

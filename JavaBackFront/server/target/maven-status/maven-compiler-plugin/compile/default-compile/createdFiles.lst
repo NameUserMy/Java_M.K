@@ -1,0 +1,8 @@
+com\backend\ioc\ServletConfig.class
+com\backend\models\UserSignUpFormModel.class
+com\backend\services\random\RandomService.class
+com\backend\servlets\HomeServlet.class
+com\backend\ioc\ServiceConfig.class
+com\backend\ioc\IocContextListener.class
+com\backend\rest\RestResponse.class
+com\backend\services\random\UtilRandomService.class
