@@ -5,12 +5,44 @@
   width: 15vw;
   height: 40vh;
   margin: 0 auto;
+  position: relative;
 }
 
 #formRegistration input {
   width: 15vw;
 }
 
+.email input {
+  height: 100%;
+}
+
 .tool-tip {
   height: 2vh;
+}
+
+.extra-email-container {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  position: absolute;
+  left: 16vw;
+}
+
+
+.extra-email-list{
+
+
+  list-style: none;
+}
+
+
+
+.extra-email-container button{
+  width: 2vw;
+  margin: 0 auto;
+}
+
+.extra-email-container ul{
+
+  grid-column-start: 1;
+  grid-column-end: 3;
 }
