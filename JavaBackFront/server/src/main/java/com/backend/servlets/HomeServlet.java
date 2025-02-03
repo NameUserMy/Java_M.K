@@ -6,6 +6,7 @@ import com.google.inject.Singleton;
 import com.backend.models.UserSignUpFormModel;
 import com.backend.rest.RestResponse;
 import com.backend.services.random.RandomService;
+import com.backend.services.time.TimeService;
 
 import jakarta.servlet.ServletException;
 
@@ -25,10 +26,12 @@ import java.util.Map;
 public class HomeServlet extends HttpServlet {
     private final Gson gson = new Gson();
     private final RandomService randomService;
+    private final TimeService timeService;
     @Inject
-    public HomeServlet(RandomService randomService){
+    public HomeServlet(RandomService randomService,TimeService timeService){
 
         this.randomService=randomService;
+        this.timeService=timeService;
 
     }
 
@@ -50,7 +53,7 @@ public class HomeServlet extends HttpServlet {
         }
         sendJson(resp, new RestResponse()
                 .setResourceUrl("POST /home")
-                .setStatus(200).setMessage(message +"  "+ randomService.randomInt()));
+                .setStatus(200).setMessage(message +", Random "+ randomService.randomInt()+", Time  "+timeService.getTimestamp()));
     }
 
     @Override
