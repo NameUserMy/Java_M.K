@@ -3,8 +3,11 @@ package com.backend.servlets;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.backend.dal.dao.DataContext;
 import com.backend.models.UserSignUpFormModel;
 import com.backend.rest.RestResponse;
+import com.backend.services.db.DbService;
+import com.backend.services.kdf.KdfService;
 import com.backend.services.random.RandomService;
 import com.backend.services.time.TimeService;
 
@@ -14,8 +17,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -27,11 +28,17 @@ public class HomeServlet extends HttpServlet {
     private final Gson gson = new Gson();
     private final RandomService randomService;
     private final TimeService timeService;
+    private final KdfService kdfService;
+    private final DbService dbService;
+    private final DataContext dataContext;
     @Inject
-    public HomeServlet(RandomService randomService,TimeService timeService){
+    public HomeServlet(DataContext dataContext, DbService dbService,RandomService randomService,TimeService timeService,KdfService kdfService){
 
         this.randomService=randomService;
         this.timeService=timeService;
+        this.kdfService=kdfService;
+        this.dbService=dbService;
+        this.dataContext=dataContext;
 
     }
 
@@ -39,21 +46,18 @@ public class HomeServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String message;
         try {
-            DriverManager.registerDriver(new com.mysql.jdbc.Driver());
-            String connectionString = "jdbc:mysql://localhost:3308/javaServlet";
-            Connection connection = DriverManager.getConnection(connectionString, "userJavaServlet", "java");
-
-            String query = "SELECT CURRENT_TIMESTAMP";
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(query);
-            resultSet.next();
-            message = resultSet.getString(1);
+            Statement statement = dbService.getConnection().createStatement();
+            message=dataContext.getUserDao().installTables()?"Install OK":"Install fail";
         } catch (SQLException e) {
             message = e.getMessage();
         }
+
+        
         sendJson(resp, new RestResponse()
                 .setResourceUrl("POST /home")
-                .setStatus(200).setMessage(message +", Random "+ randomService.randomInt()+", Time  "+timeService.getTimestamp()));
+                .setStatus(200).setMessage(message+ ", " +" Seed "+ System.nanoTime()+ " , random: "+randomService.randomInt()+", bound:1000"));
+
+            
     }
 
     @Override

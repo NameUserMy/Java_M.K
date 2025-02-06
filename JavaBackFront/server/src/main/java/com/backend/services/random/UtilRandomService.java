@@ -6,12 +6,11 @@ import com.google.inject.Singleton;
 
 @Singleton
 public class UtilRandomService implements RandomService {
-
-    private final Random random=new Random();
+    private long seed = System.nanoTime();
+    private final Random random=new Random(seed);
     @Override
     public int randomInt() {
-       
-        return random.nextInt();
+        return random.nextInt(1000);
     }
 
 }

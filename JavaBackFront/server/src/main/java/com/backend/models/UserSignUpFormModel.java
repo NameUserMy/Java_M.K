@@ -1,35 +1,30 @@
 package com.backend.models;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
+
 
 public class UserSignUpFormModel {
 
     private String name;
     private String email;
     private ArrayList<ExtraEMail> extraEmail;
-
-    public ArrayList<ExtraEMail> getExtraEmail() {
-        return extraEmail;
-    }
-
-
-
-    public void setExtraEmail(ArrayList<ExtraEMail> extraEmail) {
-        this.extraEmail = extraEmail;
-    }
-
     private String password;
     private Date dob;
     private String city;
     private String login;
 
+    public ArrayList<ExtraEMail> getExtraEmail() {
+        return extraEmail;
+    }
+
+    public void setExtraEmail(ArrayList<ExtraEMail> extraEmail) {
+        this.extraEmail = extraEmail;
+    }
+
     public UserSignUpFormModel() {
         this.extraEmail = new ArrayList<>();
     }
-
-    
 
     public String getLogin() {
         return login;
@@ -44,7 +39,9 @@ public class UserSignUpFormModel {
     }
 
     public void setCity(String city) {
+
         this.city = city;
+
     }
 
     public void setName(String name) {
