@@ -55,7 +55,7 @@ public class HomeServlet extends HttpServlet {
         
         sendJson(resp, new RestResponse()
                 .setResourceUrl("POST /home")
-                .setStatus(200).setMessage(message+ ", " +" Seed "+ System.nanoTime()+ " , random: "+randomService.randomInt()+", bound:1000"));
+                .setStatus(200).setMessage(message+ ", " +" Seed "+ timeService.getSeed()+ " , random: "+randomService.randomInt()+", bound:1000"));
 
             
     }

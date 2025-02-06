@@ -7,7 +7,12 @@ public class UtilTimeService implements TimeService {
 
     @Override
     public Date getTimestamp() {
-       return Date.from(Instant.now());
+        return Date.from(Instant.now());
+    }
+
+    @Override
+    public long getSeed() {
+        return System.nanoTime();
     }
 
 }
