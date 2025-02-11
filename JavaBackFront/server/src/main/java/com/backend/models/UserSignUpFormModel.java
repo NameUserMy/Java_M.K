@@ -1,8 +1,6 @@
 package com.backend.models;
 
 import java.util.ArrayList;
-import java.util.Date;
-
 
 public class UserSignUpFormModel {
 
@@ -10,7 +8,7 @@ public class UserSignUpFormModel {
     private String email;
     private ArrayList<ExtraEMail> extraEmail;
     private String password;
-    private Date dob;
+    private String phone;
     private String city;
     private String login;
 
@@ -22,6 +20,13 @@ public class UserSignUpFormModel {
         this.extraEmail = extraEmail;
     }
 
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
     public UserSignUpFormModel() {
         this.extraEmail = new ArrayList<>();
     }
@@ -68,11 +73,5 @@ public class UserSignUpFormModel {
         return password;
     }
 
-    public void setDob(Date dob) {
-        this.dob = dob;
-    }
-
-    public Date getDob() {
-        return dob;
-    }
+    
 }

@@ -1,6 +1,7 @@
 package com.backend.ioc;
 
-import com.backend.servlets.HomeServlet;
+import com.backend.servlets.*;
+
 import com.google.inject.servlet.ServletModule;
 
 
@@ -12,6 +13,7 @@ public class ServletConfig extends ServletModule{
         //delete annatotaion @webServle
         //add anatation @singleton
         serve("/home").with(HomeServlet.class);
+        serve("/user").with(UserServlet.class);
     }
 
 
