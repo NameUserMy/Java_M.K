@@ -32,9 +32,7 @@ public class UserServlet extends HttpServlet {
 
         RestResponse restResponse = new RestResponse()
                 .setResourceUrl("GET /user")
-               
                 .setMeta(Map.of(
-
                         "DataType", "object",
                         "read", "GET /user",
                         "update", "PUT /user",
@@ -85,9 +83,6 @@ public class UserServlet extends HttpServlet {
                     .setData("Credentials rejected"));
             return;
         }
-
-
-
 
         restResponse.setCashTime(600).setStatus(200).setData(user);
         restService.sendResponse(res, restResponse);

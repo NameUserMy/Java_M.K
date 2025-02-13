@@ -14,6 +14,7 @@ public class ServletConfig extends ServletModule{
         //add anatation @singleton
         serve("/home").with(HomeServlet.class);
         serve("/user").with(UserServlet.class);
+        serve("/random").with(RandomServlet.class);
     }
 
 
