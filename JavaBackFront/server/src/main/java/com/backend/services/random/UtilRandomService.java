@@ -9,7 +9,6 @@ import com.google.inject.Singleton;
 @Singleton
 public class UtilRandomService implements RandomService {
 
-    
     private final TimeService timeService;
     private final Random random = new Random();
 
@@ -22,6 +21,16 @@ public class UtilRandomService implements RandomService {
     public int randomInt() {
         random.setSeed(timeService.getSeed());
         return random.nextInt(1000);
+    }
+
+    @Override
+    public String noRestrictionsStr(int length) {
+        return new RandomString().noRestrictionsStr(length);
+    }
+
+    @Override
+    public String fileNameRandomStr(int length) {
+        return new RandomString().fileNameRandomStr(length);
     }
 
 }

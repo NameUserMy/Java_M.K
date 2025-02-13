@@ -2,9 +2,12 @@ package com.backend.dal.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.backend.dal.dto.User;
@@ -20,12 +23,15 @@ public class UserDao {
     private final Connection connection;
     private final Logger logger;
     private final KdfService kdfService;
+    private final DbService dbService;
 
     @Inject
     public UserDao(KdfService kdfService, DbService dbService, Logger logger) throws SQLException {
+
+        this.dbService = dbService;
         this.connection = dbService.getConnection();
         this.logger = logger;
-        this.kdfService=kdfService;
+        this.kdfService = kdfService;
     }
 
     public boolean installTables() {
@@ -34,7 +40,7 @@ public class UserDao {
 
     }
 
-    public User addUser(UserSignUpFormModel userModel)  {
+    public User addUser(UserSignUpFormModel userModel) {
 
         User user = new User();
         user.setUserId(UUID.randomUUID());
@@ -45,23 +51,23 @@ public class UserDao {
         String sql = "INSERT INTO users (userId, name, email, phone)" +
 
                 "VALUES(?, ?, ?, ?)";
-                
+
         try (PreparedStatement prep = this.connection.prepareStatement(sql)) {
             this.connection.setAutoCommit(false);
             prep.setString(1, user.getUserId().toString());
             prep.setString(2, user.getName());
             prep.setString(3, user.getEmil());
             prep.setString(4, user.getPhone());
-            
+
             prep.executeUpdate();
 
         } catch (SQLException ex) {
 
-            logger.warning("UserDao::addUser 1 "+ex.getMessage());
+            logger.warning("UserDao::addUser 1 " + ex.getMessage());
             try {
                 this.connection.rollback();
             } catch (SQLException e) {
-                
+
                 e.printStackTrace();
             }
             return null;
@@ -71,23 +77,23 @@ public class UserDao {
         sql = "INSERT INTO user_access (user_access_id, user_id, role_id, login, salt, dk )" +
 
                 "VALUES(UUID(),?,'guest', ?, ?, ?)";
-        try (PreparedStatement prep = this.connection.prepareStatement(sql)) {
+        try (PreparedStatement prep = this.dbService.getConnection().prepareStatement(sql)) {
 
             prep.setString(1, user.getUserId().toString());
             prep.setString(2, user.getEmil());
-            String salt=UUID.randomUUID().toString().substring(0,16);
+            String salt = UUID.randomUUID().toString().substring(0, 16);
             prep.setString(3, salt);
             prep.setString(4, kdfService.dk(userModel.getPassword(), salt));
             prep.executeUpdate();
-            this.connection.commit();
+            this.dbService.getConnection().commit();
 
         } catch (SQLException ex) {
 
-            logger.warning("UserDao::addUser 2 "+ex.getMessage());
+            logger.warning("UserDao::addUser 2 " + ex.getMessage());
             try {
                 this.connection.rollback();
             } catch (SQLException e) {
-               
+
                 e.printStackTrace();
             }
             return null;
@@ -95,6 +101,36 @@ public class UserDao {
         }
 
         return user;
+    }
+
+    public User autorize(String login, String pass) {
+
+        String sql = "select * from user_access ua "
+                + "join users u on ua.user_id=u.userId "
+                + "where ua.login = ? ";
+
+        try (PreparedStatement prep = dbService.getConnection().prepareStatement(sql)) {
+
+            prep.setString(1, login);
+
+            ResultSet rs = prep.executeQuery();
+            if (rs.next()) {
+
+                String dk = kdfService.dk(pass, rs.getString("salt"));
+                if (Objects.equals(dk, rs.getString("dk"))) {
+
+                    return User.froResulSet(rs);
+
+                }
+
+            }
+        } catch (SQLException ex) {
+
+            logger.log(Level.WARNING,"UserDao::autorize {0}" ,ex.getMessage());
+
+        }
+        return null;
+
     }
 
     private boolean installRole() {

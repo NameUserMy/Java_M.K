@@ -1,9 +1,11 @@
 package com.backend.servlets;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Map;
 
 import com.backend.dal.dao.DataContext;
+import com.backend.dal.dto.User;
 import com.backend.rest.RestResponse;
 import com.backend.rest.RestService;
 import com.google.inject.Inject;
@@ -30,7 +32,7 @@ public class UserServlet extends HttpServlet {
 
         RestResponse restResponse = new RestResponse()
                 .setResourceUrl("GET /user")
-                .setCashTime(600)
+               
                 .setMeta(Map.of(
 
                         "DataType", "object",
@@ -57,9 +59,37 @@ public class UserServlet extends HttpServlet {
         }
 
         String credentials = authHeader.substring(authScheme.length());
+        try {
+            credentials = new String(Base64.getDecoder().decode(credentials.getBytes()));
+        } catch (Exception ex) {
 
-        restResponse.setData(credentials);
+            restService.sendResponse(res, restResponse.setStatus(422)
+                    .setData("Decode error " + ex.getMessage()));
+            return;
+        }
 
+        String[] parts = credentials.split(":", 2);
+
+        if (parts.length != 2) {
+
+            restService.sendResponse(res, restResponse.setStatus(422)
+                    .setData("Format error spliting by ':' "));
+            return;
+
+        }
+
+        User user = dataContext.getUserDao().autorize(parts[0], parts[1]);
+
+        if (user == null) {
+            restService.sendResponse(res, restResponse.setStatus(401)
+                    .setData("Credentials rejected"));
+            return;
+        }
+
+
+
+
+        restResponse.setCashTime(600).setStatus(200).setData(user);
         restService.sendResponse(res, restResponse);
 
     }

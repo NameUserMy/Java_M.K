@@ -4,15 +4,15 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.backend.dal.dao.DataContext;
 import com.backend.dal.dto.User;
-import com.backend.dal.dto.UserRoles;
+
 
 import com.backend.models.UserSignUpFormModel;
 import com.backend.rest.RestResponse;
 import com.backend.rest.RestService;
 import com.backend.services.db.DbService;
-import com.backend.services.kdf.KdfService;
+
 import com.backend.services.random.RandomService;
-import com.backend.services.time.TimeService;
+
 
 import jakarta.servlet.ServletException;
 
@@ -28,12 +28,16 @@ public class HomeServlet extends HttpServlet {
 
     private final DataContext dataContext;
     private final RestService restService;
+    private final RandomService randomService;
+
+    
 
     @Inject
-    public HomeServlet(RestService restService, DataContext dataContext, DbService dbService) {
+    public HomeServlet(RandomService randomService, RestService restService, DataContext dataContext, DbService dbService) {
 
         this.dataContext = dataContext;
         this.restService = restService;
+        this.randomService=randomService;
 
     }
 
@@ -44,7 +48,9 @@ public class HomeServlet extends HttpServlet {
         restService.sendResponse(resp, new RestResponse()
                 .setResourceUrl("POST /home")
                 .setStatus(200)
-                .setMessage(message)
+                .setMessage(message+ " Random str: "+ 
+                randomService.noRestrictionsStr(10)+
+                ", random file name: "+randomService.fileNameRandomStr(8))
                 .setMeta(Map.of(
 
                         "DataType", "object",
@@ -55,6 +61,7 @@ public class HomeServlet extends HttpServlet {
 
     }
 
+    
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String body = new String(req.getInputStream().readAllBytes());
