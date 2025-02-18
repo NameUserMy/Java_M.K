@@ -1,14 +1,13 @@
 import { Link } from "react-router-dom";
-
+import "./home.css";
 export default function Home() {
 
-
-
     return (
-        <>
-            <Link to="/signup">Signup</Link>
-            <Link to="/signin">Sign in</Link>
-        </>
+        <dl>
+            <Link to="/signup"><dt>Signup</dt></Link>
+            <Link to="/signin"><dt>Sign in</dt></Link>
+            <Link to="/profile"><dt>profile</dt></Link>
+        </dl>
 
 
     );

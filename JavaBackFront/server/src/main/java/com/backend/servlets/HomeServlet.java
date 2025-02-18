@@ -2,25 +2,19 @@ package com.backend.servlets;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
 import com.backend.dal.dao.DataContext;
 import com.backend.dal.dto.User;
-
-
 import com.backend.models.UserSignUpFormModel;
 import com.backend.rest.RestResponse;
 import com.backend.rest.RestService;
 import com.backend.services.db.DbService;
 
-import com.backend.services.random.RandomService;
-
-
 import jakarta.servlet.ServletException;
-
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
 import java.util.Map;
 
 @Singleton
@@ -28,44 +22,35 @@ public class HomeServlet extends HttpServlet {
 
     private final DataContext dataContext;
     private final RestService restService;
-    private final RandomService randomService;
-
-    
 
     @Inject
-    public HomeServlet(RandomService randomService, RestService restService, DataContext dataContext, DbService dbService) {
+    public HomeServlet(RestService restService, DataContext dataContext, DbService dbService) {
 
         this.dataContext = dataContext;
         this.restService = restService;
-        this.randomService=randomService;
 
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
         String message;
         message = dataContext.getUserDao().installTables() ? "Install OK" : "Install fail";
         restService.sendResponse(resp, new RestResponse()
                 .setResourceUrl("POST /home")
                 .setStatus(200)
-                .setMessage(message+ " Random str: "+ 
-                randomService.noRestrictionsStr(10)+
-                ", random file name: "+randomService.fileNameRandomStr(8))
+                .setMessage(message)
                 .setMeta(Map.of(
 
                         "DataType", "object",
                         "read", "GET /home",
                         "update", "PUT /home",
-                        "delete", "DELETE /home"))
-        );
+                        "delete", "DELETE /home")));
 
     }
 
-    
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String body = new String(req.getInputStream().readAllBytes());
-
         UserSignUpFormModel model;
         RestResponse restResponse = new RestResponse()
                 .setResourceUrl("POST /home")
@@ -73,7 +58,7 @@ public class HomeServlet extends HttpServlet {
 
         try {
 
-            model = restService.fromJson(body, UserSignUpFormModel.class);
+            model = restService.fromBody(req, UserSignUpFormModel.class);
 
         } catch (Exception ex) {
             restService.sendResponse(resp, restResponse
@@ -81,6 +66,7 @@ public class HomeServlet extends HttpServlet {
                     .setMessage(ex.getMessage()));
             return;
         }
+
         User user = dataContext.getUserDao().addUser(model);
 
         if (user == null) {

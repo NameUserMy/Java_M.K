@@ -1,23 +1,27 @@
 package com.backend.models;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class UserSignUpFormModel {
 
     private String name;
+    private String phone;
+    private String city;
+    private Date dofb;
+    private int age;
+    private Double money;
     private String email;
     private ArrayList<ExtraEMail> extraEmail;
     private String password;
-    private String phone;
-    private String city;
     private String login;
 
-    public ArrayList<ExtraEMail> getExtraEmail() {
-        return extraEmail;
+    public String getName() {
+        return name;
     }
 
-    public void setExtraEmail(ArrayList<ExtraEMail> extraEmail) {
-        this.extraEmail = extraEmail;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getPhone() {
@@ -27,8 +31,61 @@ public class UserSignUpFormModel {
     public void setPhone(String phone) {
         this.phone = phone;
     }
-    public UserSignUpFormModel() {
-        this.extraEmail = new ArrayList<>();
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public Date getDofb() {
+        return dofb;
+    }
+
+    public void setDofb(Date dofb) {
+        this.dofb = dofb;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public double getMoney() {
+        return money;
+    }
+
+    public void setMoney(double money) {
+        this.money = money;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public ArrayList<ExtraEMail> getExtraEmail() {
+        return extraEmail;
+    }
+
+    public void setExtraEmail(ArrayList<ExtraEMail> extraEmail) {
+        this.extraEmail = extraEmail;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getLogin() {
@@ -39,39 +96,4 @@ public class UserSignUpFormModel {
         this.login = login;
     }
 
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-
-        this.city = city;
-
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    
 }

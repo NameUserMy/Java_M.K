@@ -1,10 +1,13 @@
 package com.backend.dal.dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -27,11 +30,83 @@ public class UserDao {
 
     @Inject
     public UserDao(KdfService kdfService, DbService dbService, Logger logger) throws SQLException {
-
         this.dbService = dbService;
         this.connection = dbService.getConnection();
         this.logger = logger;
         this.kdfService = kdfService;
+    }
+
+    public User getUserById(String id) {
+
+        UUID uuid;
+        try {
+            uuid = UUID.fromString(id);
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "UserDao::getUserByid Parse error {0}", id);
+            return null;
+        }
+        return getUserById(uuid);
+
+    }
+
+    public boolean upDate(User user) {
+
+        Map<String, Object> data = new HashMap<>();
+        if (user.getName() != null) {
+            data.put("name", user.getName());
+        }
+        if (user.getPhone() != null) {
+            data.put("phone", user.getPhone());
+        }
+        if (data.isEmpty())
+            return true;// ?
+        // TODO concert to string builder
+        String sql = "UPDATE users SET ";
+        boolean isFirst = true;
+        for (Map.Entry<String, Object> entry : data.entrySet()) {
+
+            if (isFirst)
+                isFirst = false;
+            else
+                sql += ",";
+            sql += entry.getKey() + " = ? ";
+        }
+        sql += " WHERE userId = ? ";
+        try (PreparedStatement prep = dbService.getConnection().prepareStatement(sql)) {
+            int param = 1;
+            for (Map.Entry<String, Object> entry : data.entrySet()) {
+                prep.setObject(param, entry.getValue());
+                param++;
+            }
+            prep.setString(param, "user.getUserId().toString");
+            prep.execute();
+            return true;
+        } catch (SQLException ex) {
+
+            logger.log(Level.WARNING, "UserDao::getUserByid Parse error {0},{1}",
+                    new Object[] { ex.getMessage(), sql });
+        }
+        return false;
+
+    }
+
+    public User getUserById(UUID uuid) {
+
+        String sql = String.format("SELECT * FROM users u WHERE u.userId='%s'", uuid);
+        try (Statement stmt = dbService.getConnection().createStatement()) {
+            ResultSet rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+
+                return User.froResulSet(rs);
+
+            }
+        } catch (SQLException ex) {
+
+            logger.log(Level.WARNING, "UserDao::getUserByid Parse error {0},{1}",
+                    new Object[] { ex.getMessage(), sql });
+        }
+        return null;
+
     }
 
     public boolean installTables() {
@@ -39,25 +114,59 @@ public class UserDao {
         return installUsers() && installUsersAccess() && installRole();
 
     }
+    private boolean installUsers() {
 
+        String sql = "CREATE TABLE IF NOT EXISTS users("
+                + "userId  CHAR(36)     PRIMARY KEY DEFAULT( UUID() ),"
+                + "name    VARCHAR(128) NOT NULL,"
+                + "phone   VARCHAR(32)  NOT NULL,"
+                + "city    VARCHAR(20)  NOT NULL,"
+                + "dateOfB DATE         NOT NULL,"
+                + "age     INT              NULL,"
+                + "money   DOUBLE (10,2)    NULL,"
+                + "email   VARCHAR(256) NOT NULL"
+                + ") Engine = InnoDB, DEFAULT CHARSET = utf8mb4";
+
+        try (Statement statement = connection.createStatement()) {
+
+            statement.executeUpdate(sql);
+            logger.info("installUsers Ok");
+            return true;
+
+        } catch (SQLException ex) {
+
+            logger.warning("UserDao::installUsers " + ex.getCause());
+            return false;
+
+        }
+
+    }
     public User addUser(UserSignUpFormModel userModel) {
 
         User user = new User();
         user.setUserId(UUID.randomUUID());
-        user.setEmil(userModel.getEmail());
         user.setName(userModel.getName());
         user.setPhone(userModel.getPhone());
+        user.setCity(userModel.getCity());
+        user.setDofb(userModel.getDofb());
+        user.setAge(userModel.getAge());
+        user.setMoney(userModel.getMoney());
+        user.setEmail(userModel.getEmail());
 
-        String sql = "INSERT INTO users (userId, name, email, phone)" +
+        String sql = "INSERT INTO users (userId,name,phone,city,dateOfB,age,money,email)" +
 
-                "VALUES(?, ?, ?, ?)";
+                "VALUES(?, ?, ?, ?,?,?,?,?)";
 
         try (PreparedStatement prep = this.connection.prepareStatement(sql)) {
             this.connection.setAutoCommit(false);
             prep.setString(1, user.getUserId().toString());
             prep.setString(2, user.getName());
-            prep.setString(3, user.getEmil());
-            prep.setString(4, user.getPhone());
+            prep.setString(3, user.getPhone());
+            prep.setString(4, user.getCity());
+            prep.setDate(5, new Date(user.getDofb().getTime()));
+            prep.setInt(6, user.getAge());
+            prep.setDouble(7, user.getMoney());
+            prep.setString(8, user.getEmail());
 
             prep.executeUpdate();
 
@@ -80,7 +189,7 @@ public class UserDao {
         try (PreparedStatement prep = this.dbService.getConnection().prepareStatement(sql)) {
 
             prep.setString(1, user.getUserId().toString());
-            prep.setString(2, user.getEmil());
+            prep.setString(2, user.getEmail());
             String salt = UUID.randomUUID().toString().substring(0, 16);
             prep.setString(3, salt);
             prep.setString(4, kdfService.dk(userModel.getPassword(), salt));
@@ -126,7 +235,7 @@ public class UserDao {
             }
         } catch (SQLException ex) {
 
-            logger.log(Level.WARNING,"UserDao::autorize {0}" ,ex.getMessage());
+            logger.log(Level.WARNING, "UserDao::autorize {0}", ex.getMessage());
 
         }
         return null;
@@ -186,28 +295,6 @@ public class UserDao {
 
     }
 
-    private boolean installUsers() {
-
-        String sql = "CREATE TABLE IF NOT EXISTS users("
-                + "userId  CHAR(36)     PRIMARY KEY DEFAULT( UUID() ),"
-                + "name    VARCHAR(128) NOT NULL,"
-                + "email   VARCHAR(256)     NULL,"
-                + "phone   VARCHAR(32)      NULL"
-                + ") Engine = InnoDB, DEFAULT CHARSET = utf8mb4";
-
-        try (Statement statement = connection.createStatement()) {
-
-            statement.executeUpdate(sql);
-            logger.info("installUsers Ok");
-            return true;
-
-        } catch (SQLException ex) {
-
-            logger.warning("UserDao::installUsers " + ex.getCause());
-            return false;
-
-        }
-
-    }
+   
 
 }

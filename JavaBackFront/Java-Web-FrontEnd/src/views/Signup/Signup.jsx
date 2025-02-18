@@ -1,23 +1,36 @@
 import { useFieldArray, useForm } from "react-hook-form";
 
-
+import "./signUp.css"
 function Signup() {
 
   const { register, handleSubmit, control, formState: { errors }, watch } = useForm({
-    defaultValues: { name: '', phone: '', email: '', login: '', password: '', confirmPassword: '', city: '' }
+    defaultValues: { 
+      name: '', 
+      phone: '',  
+      city: '',
+      dofb:'',
+      age:'',
+      money:'', 
+      email: '', 
+      login: '', 
+      password: '', 
+      confirmPassword: '' }
   });
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: "extraEmail"
   })
-
-  register("name", { required: "Name requared", pattern: { value: /^([a-zA-Z]){5,20}$/, message: "min 5 max 20, letters" } });
+//pattern: { value: /^([a-zA-Z]){5,20}$/, message: "min 5 max 20, letters" } 
+  register("name", { required: "Name requared"});
+  register("phone", { required: "phone   requared" });
+  register("dofb", { required: "Date   requared" });
   register("email", { required: "Email requared", pattern: { value: /^[a-zA-Z0-9._%±]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$/, message: "example@aaa.com" } });
+  register("city", { required: "City  requared", pattern: { value: /^([A-Z]){1}[a-z]{3,20}$/, message: "Example City" } });
   register("login", { required: "Login requared", pattern: { value: /^[a-zA-Z0-9._%±-]{5,20}$/, message: "leters,numbers,(. _ % ± -) min 5 max 20 simbols" } });
   register("password", { required: "Password  requared", pattern: { value: /^[a-zA-Z0-9._%±-]{5,20}$/, message: "leters,numbers,(. _ % ± -) min 5 max 20 simbols" } });
-  register("city", { required: "City  requared", pattern: { value: /^([A-Z]){1}[a-z]{5,20}$/, message: "Example City" } });
-  register("phone", { required: "phone   requared" });
+  
+  
   register('confirmPassword', {
     required: "Confirm password requared",
     validate: () => {
@@ -36,6 +49,8 @@ function Signup() {
       },
       body: JSON.stringify(data),
     }).then(r => r.json()).then(j => { console.log(j) });
+
+    //console.log(data);
   }
 
   return (
@@ -44,26 +59,24 @@ function Signup() {
       {errors.name && <span className="tool-tip">{errors.name.message}</span>}
 
       <input {...register('phone')} type='text' placeholder='Enter phone *' />
-      {errors.phone && <span className="tool-tip">{errors.dob.message}</span>}
+      {errors.phone && <span className="tool-tip">{errors.phone.message}</span>}
 
-      <input {...register('city')} type="text" placeholder="Enter city" />
+      <input {...register('city')} type="text" placeholder="Enter city *" />
       {errors.city && <span className="tool-tip">{errors.city.message}</span>}
 
+      <input {...register('dofb')} type="date" />
+      {errors.dofb && <span className="tool-tip">{errors.dofb.message}</span>}
+
+      <input {...register('age')} type="number" placeholder="Enter age" />
+     
+      <input {...register('money')} type="number" min="0"  step=".01" placeholder="Enter money" />
+     
 
       <div className="email" >
         <input  {...register("email")} type='email' placeholder='Enter email *' />
         {errors.email && <span className="tool-tip">{errors.email.message}</span>}
 
         <div className="extra-email-container">
-
-          <ul className="extra-email-list">
-            {fields.map((item, index) => (
-              <li key={item.id}>
-                <input  {...register(`extraEmail.${index}.extraMail`)} type='email' placeholder='Enter extra email *' />
-              </li>
-            ))}
-          </ul>
-
           <button title="Add extra email"
             type="button"
             onClick={() => append()}
@@ -72,6 +85,13 @@ function Signup() {
             type="button"
             onClick={() => remove()}
           > - </button>
+          <ul className="extra-email-list">
+            {fields.map((item, index) => (
+              <li key={item.id}>
+                <input  {...register(`extraEmail.${index}.extraMail`)} type='email' placeholder='Enter extra email *' />
+              </li>
+            ))}
+          </ul>
 
         </div>
       </div>

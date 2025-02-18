@@ -17,7 +17,8 @@ public class MySqlDbService implements DbService {
         if (connection == null) {
 
             DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
-            String connectionString = "jdbc:mysql://localhost:3308/javaServlet";
+            String connectionString = "jdbc:mysql://localhost:3308/javaServlet"
+            +"?useUnicode=true&characterEncoding=UTF-8";
             connection = DriverManager.getConnection(connectionString, "userJavaServlet", "java");
 
         }
