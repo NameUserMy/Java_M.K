@@ -2,7 +2,7 @@
   display: grid;
   grid-template-rows: repeat(8, 1fr);
   row-gap: 1vh;
-  width: 15vw;
+  width: 20vw;
   height: 40vh;
   margin: 0 auto;
 

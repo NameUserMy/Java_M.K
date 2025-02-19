@@ -50,7 +50,7 @@ function Signup() {
       body: JSON.stringify(data),
     }).then(r => r.json()).then(j => { console.log(j) });
 
-    //console.log(data);
+  
   }
 
   return (

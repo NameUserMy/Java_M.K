@@ -1,0 +1,48 @@
+#header-profile {
+    background-color: antiquewhite;
+    height: 10vh;
+    width: 90vw;
+    margin: 0 auto;
+
+    border-radius: 1vh;
+    box-shadow: 2px 2px 2px black;
+}
+
+
+#form-change-profile {
+    display: grid;
+    grid-template-rows: repeat(8, 1fr);
+    width: 15vw;
+    height: 50vh;
+    margin: 0 auto;
+  
+  }
+  
+  #form-change-profile input {
+    width: 15vw;
+  }
+  
+  .tool-tip {
+    height: 2vh;
+  }
+
+
+
+
+.user-info {
+    margin-left: 0.5vw;
+    font-size: 0.7rem;
+}
+
+#content-profile {
+
+    align-content: center;
+    height: 90vh;
+    
+
+}
+
+#content-profile label{
+
+    font-size: 0.6rem;
+}
