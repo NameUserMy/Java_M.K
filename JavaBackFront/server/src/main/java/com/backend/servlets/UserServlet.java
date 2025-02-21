@@ -153,7 +153,7 @@ public class UserServlet extends HttpServlet {
             return;
         }
 
-        restResponse.setCashTime(0).setStatus(200).setData(userUpdate);
+        restResponse.setStatus(202).setData(userUpdate).setCashTime(0);
         restService.sendResponse(resp, restResponse);
     }
 

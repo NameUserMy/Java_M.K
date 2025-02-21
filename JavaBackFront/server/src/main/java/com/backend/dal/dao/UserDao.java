@@ -10,8 +10,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+
 
 import com.backend.dal.dto.User;
 import com.backend.models.UserSignUpFormModel;
@@ -58,6 +62,19 @@ public class UserDao {
         if (user.getPhone() != null) {
             data.put("phone", user.getPhone());
         }
+        if (user.getCity() != null) {
+            data.put("city", user.getCity());
+        }
+        if (user.getDofb() != null) {
+            data.put("dateOfB", user.getDofb());
+        }
+        if (user.getAge() != 0) {
+            data.put("age", user.getAge());
+        }
+        if (user.getMoney() != 0) {
+            data.put("money", user.getMoney());
+        }
+        
         if (data.isEmpty())
             return true;// ?
         // TODO concert to string builder
@@ -65,20 +82,19 @@ public class UserDao {
         boolean isFirst = true;
         for (Map.Entry<String, Object> entry : data.entrySet()) {
 
-            if (isFirst)
-                isFirst = false;
+            if (isFirst) isFirst = false;
             else
-                sql += ",";
-            sql += entry.getKey() + " = ? ";
+                sql += ", ";
+            sql += entry.getKey() + " = ?";
         }
-        sql += " WHERE userId = ? ";
+        sql += " WHERE userId = ?";
         try (PreparedStatement prep = dbService.getConnection().prepareStatement(sql)) {
             int param = 1;
             for (Map.Entry<String, Object> entry : data.entrySet()) {
                 prep.setObject(param, entry.getValue());
-                param++;
+                param+=1;
             }
-            prep.setString(param, "user.getUserId().toString");
+            prep.setString(param, user.getUserId().toString());
             prep.execute();
             return true;
         } catch (SQLException ex) {
@@ -111,7 +127,17 @@ public class UserDao {
 
     public boolean installTables() {
 
-        return installUsers() && installUsersAccess() && installRole();
+       Future<Boolean> task1= CompletableFuture.supplyAsync(this::installUsersAccess);
+       Future<Boolean> task2= CompletableFuture.supplyAsync(this::installUsers);
+        try {
+            boolean res1=task1.get();
+            boolean res2=task2.get();
+            return res1 &&res2;
+        } catch (Exception e) {
+
+            logger.log(Level.WARNING, "The super puper Async {0}", e.getMessage());
+          return false;
+        }
 
     }
     private boolean installUsers() {
