@@ -55,7 +55,7 @@ public class UserDao {
 
         String sql = String.format(
                 "UPDATE users SET delete_moment=CURRENT_TIMESTAMP,"
-                        + "name='', email='', phone='' WHERE userId = '%s'",
+                        + "name='', email='', city='', age=0, dateOfB=NULL, money=0, phone='' WHERE userId = '%s'",
                 user.getUserId().toString());
 
         String sql1 = String.format("UPDATE user_access SET ua_delete_dt=CURRENT_TIMESTAMP,"
@@ -275,7 +275,7 @@ public class UserDao {
                 + "name    VARCHAR(128) NOT NULL,"
                 + "phone   VARCHAR(32)  NOT NULL,"
                 + "city    VARCHAR(20)  NOT NULL,"
-                + "dateOfB DATE         NOT NULL,"
+                + "dateOfB DATE             NULL,"
                 + "age     INT              NULL,"
                 + "money   DOUBLE (10,2)    NULL,"
                 + "delete_moment   DATETIME NULL,"
