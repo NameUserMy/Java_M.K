@@ -20,6 +20,7 @@ public class MySqlDbService implements DbService {
             String connectionString = "jdbc:mysql://localhost:3308/javaServlet"
             +"?useUnicode=true&characterEncoding=UTF-8";
             connection = DriverManager.getConnection(connectionString, "userJavaServlet", "java");
+            connection.setAutoCommit(false);
 
         }
         return connection;

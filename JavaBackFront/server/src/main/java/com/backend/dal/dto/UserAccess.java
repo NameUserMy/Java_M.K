@@ -9,7 +9,16 @@ public class UserAccess {
     private String salt;
     private String dk;
     private String roleId;
+    private java.util.Date deleteMoment;
   
+    public java.util.Date getDeleteMoment() {
+        return deleteMoment;
+    }
+
+    public void setDeleteMoment(java.util.Date deleteMoment) {
+        this.deleteMoment = deleteMoment;
+    }
+
     public UUID getUserAccessId() {
         return userAccessId;
     }

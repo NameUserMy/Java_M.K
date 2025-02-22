@@ -35,7 +35,7 @@ public class HomeServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         String message;
-        message = dataContext.getUserDao().installTables() ? "Install OK" : "Install fail";
+        message = dataContext.getUserDao().installTables()&&dataContext.getAccessTokenDao().installTables() ? "Install OK" : "Install fail";
         restService.sendResponse(resp, new RestResponse()
                 .setResourceUrl("POST /home")
                 .setStatus(200)

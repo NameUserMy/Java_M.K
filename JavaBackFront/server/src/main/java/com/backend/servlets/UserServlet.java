@@ -3,6 +3,10 @@ package com.backend.servlets;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.backend.dal.dao.DataContext;
 import com.backend.dal.dto.User;
@@ -21,11 +25,13 @@ import jakarta.servlet.http.HttpServletResponse;
 public class UserServlet extends HttpServlet {
     private final DataContext dataContext;
     private final RestService restService;
+    private final Logger logger;
 
     @Inject
-    public UserServlet(DataContext dataContext, RestService restService) {
+    public UserServlet(Logger logger, DataContext dataContext, RestService restService) {
         this.dataContext = dataContext;
         this.restService = restService;
+        this.logger=logger;
     }
 
     @Override
@@ -99,9 +105,41 @@ public class UserServlet extends HttpServlet {
                         "read", "GET /user",
                         "update", "PUT /user",
                         "delete", "DELETE /user"));
+
+        String userId = req.getParameter("id");
+        UUID userUuid;
+        if (userId == null) {
+            restService.sendResponse(resp, restResponse.setStatus(400).setData("Mising requared ID"));
+            return;
+        }
+        try {
+            userUuid = UUID.fromString(userId);
+        } catch (Exception ignore) {
+
+            restService.sendResponse(resp, restResponse.setStatus(400).setData("Invalide ID fprmat"));
+            return;
+        }
+
+        User user = dataContext.getUserDao().getUserById(userUuid);
+        if(user==null){
+
+            restService.sendResponse(resp, restResponse.setStatus(401).setData("Unauthorized"));
+            return;
+        }
+
+        try{
+            dataContext.getUserDao().deleteAsync(user).get();
+        }catch(InterruptedException | ExecutionException ex ){
+
+
+            logger.log(Level.SEVERE,"deleteAsync fail {0}", ex.getMessage());
+            restService.sendResponse(resp, restResponse.setStatus(500).setData("See Server log"));
+            return;
+        }
+
         restResponse
-                .setStatus(200)
-                .setData("Comming soon")
+                .setStatus(202)
+                .setData("Deleted")
                 .setCashTime(0);
         restService.sendResponse(resp, restResponse);
     }
