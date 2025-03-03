@@ -9,10 +9,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.backend.dal.dao.DataContext;
+import com.backend.dal.dto.AccessToken;
 import com.backend.dal.dto.User;
+import com.backend.dal.dto.UserAccess;
+import com.backend.models.UserAuthJwtModel;
+import com.backend.models.UserAuthViewModel;
 import com.backend.models.UserSignUpFormModel;
 import com.backend.rest.RestResponse;
 import com.backend.rest.RestService;
+import com.backend.services.hash.HashService;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -25,13 +30,16 @@ import jakarta.servlet.http.HttpServletResponse;
 public class UserServlet extends HttpServlet {
     private final DataContext dataContext;
     private final RestService restService;
+    private final HashService hashService;
     private final Logger logger;
 
     @Inject
-    public UserServlet(Logger logger, DataContext dataContext, RestService restService) {
+    public UserServlet(Logger logger, HashService hashService, DataContext dataContext, RestService restService) {
         this.dataContext = dataContext;
         this.restService = restService;
+        this.hashService = hashService;
         this.logger=logger;
+
     }
 
     @Override
@@ -45,6 +53,7 @@ public class UserServlet extends HttpServlet {
                         "update", "PUT /user",
                         "delete", "DELETE /user"));
 
+        // check Authorization
         String authHeader = req.getHeader("Authorization");
 
         if (authHeader == null) {
@@ -83,15 +92,41 @@ public class UserServlet extends HttpServlet {
 
         }
 
-        User user = dataContext.getUserDao().autorize(parts[0], parts[1]);
+        UserAccess userAccess = dataContext.getUserDao().authorize(parts[0], parts[1]);
 
-        if (user == null) {
+        if (userAccess == null) {
             restService.sendResponse(res, restResponse.setStatus(401)
                     .setData("Credentials rejected"));
             return;
         }
 
-        restResponse.setCashTime(600).setStatus(200).setData(user);
+        // Create token for user
+
+        AccessToken token;
+        if (!dataContext.getAccessTokenDao().prolonge(userAccess.getUserAccessId().toString())) {
+
+            token = dataContext.getAccessTokenDao().create(userAccess);
+        } else {
+
+            token = dataContext.getAccessTokenDao().getTAccessToken(userAccess.getUserAccessId().toString());
+        }
+
+        User user = dataContext.getUserDao().getUserById(userAccess.getUserId());
+
+        // String jwtHeader = new String(Base64.getUrlEncoder().encode(
+        //         "{\"alg\": \"HS256\", \"typ\": \"JWT\" }".getBytes()));
+        // String jwtPayload = new String(Base64.getUrlEncoder().encode(
+        //         restService.gson.toJson(userAccess).getBytes()));
+        // String jwtSignature = new String(Base64.getUrlEncoder().encode(
+        //         hashService.digest("secret" + jwtHeader + "." + jwtPayload).getBytes()));
+        // String jwtToken = jwtHeader + "." + jwtPayload + "." + jwtSignature;
+
+        restResponse
+                .setCashTime(600)
+                .setStatus(200)
+                .setData(
+                         new UserAuthViewModel(user, userAccess, token)
+                        /*new UserAuthJwtModel(user, jwtToken)*/);
         restService.sendResponse(res, restResponse);
 
     }
@@ -121,18 +156,17 @@ public class UserServlet extends HttpServlet {
         }
 
         User user = dataContext.getUserDao().getUserById(userUuid);
-        if(user==null){
+        if (user == null) {
 
             restService.sendResponse(resp, restResponse.setStatus(401).setData("Unauthorized"));
             return;
         }
 
-        try{
+        try {
             dataContext.getUserDao().deleteAsync(user).get();
-        }catch(InterruptedException | ExecutionException ex ){
+        } catch (InterruptedException | ExecutionException ex) {
 
-
-            logger.log(Level.SEVERE,"deleteAsync fail {0}", ex.getMessage());
+            logger.log(Level.SEVERE, "deleteAsync fail {0}", ex.getMessage());
             restService.sendResponse(resp, restResponse.setStatus(500).setData("See Server log"));
             return;
         }
@@ -154,6 +188,19 @@ public class UserServlet extends HttpServlet {
                         "read", "GET /user",
                         "update", "PUT /user",
                         "delete", "DELETE /user"));
+
+        // check token athorization
+
+        UserAccess userAccess = (UserAccess) req.getAttribute("AuthUserAccess");
+
+        if (userAccess == null) {
+            restService.sendResponse(resp,
+                    restResponse
+                            .setStatus(401)
+                            .setData(req.getAttribute("AuthStatus")));
+            return;
+
+        }
 
         User userUpdate;
         try {

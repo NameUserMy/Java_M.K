@@ -1,5 +1,8 @@
 package com.backend.dal.dto;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Date;
 import java.util.UUID;
 
 public class UserAccess {
@@ -11,6 +14,21 @@ public class UserAccess {
     private String roleId;
     private java.util.Date deleteMoment;
   
+    public static UserAccess fromResultSet(ResultSet rs)throws SQLException{
+
+        UserAccess ua=new UserAccess();
+        ua.setUserAccessId(UUID.fromString(rs.getString("user_access_id")));
+        ua.setUserId(UUID.fromString(rs.getString("user_id")));
+        ua.setLogin(rs.getString("login"));
+        ua.setSalt(rs.getString("salt"));
+        ua.setRoleId(rs.getString("role_id"));
+        ua.setDk(rs.getString("dk"));
+        
+        java.sql.Timestamp timestamp=rs.getTimestamp("ua_delete_dt");
+        ua.setDeleteMoment(timestamp==null?null:new Date(timestamp.getTime()));
+
+        return ua;
+    }
     public java.util.Date getDeleteMoment() {
         return deleteMoment;
     }

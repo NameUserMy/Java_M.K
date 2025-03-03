@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.backend.dal.dto.User;
+import com.backend.dal.dto.UserAccess;
 import com.backend.models.UserSignUpFormModel;
 import com.backend.services.db.DbService;
 import com.backend.services.kdf.KdfService;
@@ -367,23 +368,23 @@ public class UserDao {
         return user;
     }
 
-    public User autorize(String login, String pass) {
+    public UserAccess authorize(String login, String pass) {
 
         String sql = "select * from user_access ua "
-                + "join users u on ua.user_id=u.userId "
+               // + "join users u on ua.user_id=u.userId "
                 + "where ua.login = ? ";
 
         try (PreparedStatement prep = dbService.getConnection().prepareStatement(sql)) {
 
             prep.setString(1, login);
-
             ResultSet rs = prep.executeQuery();
+
             if (rs.next()) {
 
                 String dk = kdfService.dk(pass, rs.getString("salt"));
                 if (Objects.equals(dk, rs.getString("dk"))) {
 
-                    return User.froResulSet(rs);
+                    return UserAccess.fromResultSet(rs);
 
                 }
 

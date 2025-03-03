@@ -10,7 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 public class RestService {
-    private final Gson gson = new Gson();
+    public final Gson gson = new Gson();
 
     public void sendResponse(HttpServletResponse resp, RestResponse restResponse) throws IOException {
         resp.setContentType("application/json");

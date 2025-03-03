@@ -10,8 +10,45 @@ import Profile from "./views/Profile/Profile";
 function App() {
 
   const [user, setUser] = useState(null);
+  const [accessToken, setAccessToken] = useState(null);
+  
+  
+  const request = (url, conf) => new Promise((resolve, reject) => {
+    const backHost = "http://localhost:8080/server";
+    //если токен есть в контексте, а в параметрах conf нету, то добовляем из контекста 
 
-  return <AppContext.Provider value={{ user, setUser ,request}}>
+    if(accessToken !=null &&  typeof(accessToken.accessTokenId)!= 'undefined'){
+
+
+      if(!conf){
+
+        conf={};
+      }
+      if(!conf.headers){
+
+        conf.headers={};
+      }
+
+      if(! conf.headers["Authorization"]){
+
+        conf.headers["Authorization"]="Bearer "+ accessToken.accessTokenId;
+      }
+
+    }
+    fetch(backHost + url, conf)
+      .then(r => r.json())
+      .then(j => {
+        if (j.status < 300) {
+          resolve(j.data);
+        } else {
+          reject(j);
+        }
+      })
+      .catch(reject);
+  });
+
+
+  return <AppContext.Provider value={{ user, setUser ,request,accessToken,setAccessToken}}>
 
     <Router>
 
@@ -29,18 +66,6 @@ function App() {
 
 }
 
-const request = (url, conf) => new Promise((resolve, reject) => {
-  const backHost = "http://localhost:8080/server";
-  fetch(backHost + url, conf)
-    .then(r => r.json())
-    .then(j => {
-      if (j.status < 300) {
-        resolve(j.data);
-      } else {
-        reject(j);
-      }
-    })
-    .catch(reject);
-});
+
 
 export default App;

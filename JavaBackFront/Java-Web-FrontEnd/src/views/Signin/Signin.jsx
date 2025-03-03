@@ -10,7 +10,7 @@ function Signin() {
         defaultValues: { email: '', password: '' }
     });
 
-    const { user, setUser, request } = useContext(AppContext);
+    const { setAccessToken,setUser, request } = useContext(AppContext);
 
     const sendForm = (data) => {
         //rfc7617
@@ -23,26 +23,12 @@ function Signin() {
                 'Authorization': 'Basic ' + credentials,
             },
         }).then(data=>{
-            setUser(data);
+            setUser(data.user);
+            setAccessToken(data.accessToken);
+            //setAccessToken(data.jwtToken);
             navigate('/profile');
         }).catch(console.log);
-
-
-
-        // fetch("http://localhost:8080/server/user", {
-        //     method: "GET",
-        //     headers: {
-        //         'Authorization': 'Basic ' + credentials,
-        //     },
-        // }).then(r => r.json()).then(j => {
-        //     if (j.status == 200) {
-
-        //         setUser(j.data);
-        //         console.log(j)
-        //         navigate("/profile");
-        //     }
-        // });
-        // console.log(credentials);
+       
     }
 
 

@@ -8,6 +8,7 @@ import com.backend.dal.dto.User;
 import com.backend.models.UserSignUpFormModel;
 import com.backend.rest.RestResponse;
 import com.backend.rest.RestService;
+import com.backend.services.config.ConfigService;
 import com.backend.services.db.DbService;
 
 import jakarta.servlet.ServletException;
@@ -22,12 +23,14 @@ public class HomeServlet extends HttpServlet {
 
     private final DataContext dataContext;
     private final RestService restService;
+    private final ConfigService configService;
 
     @Inject
-    public HomeServlet(RestService restService, DataContext dataContext, DbService dbService) {
+    public HomeServlet(ConfigService configService,RestService restService, DataContext dataContext, DbService dbService) {
 
         this.dataContext = dataContext;
         this.restService = restService;
+        this.configService=configService;
 
     }
 
@@ -39,7 +42,7 @@ public class HomeServlet extends HttpServlet {
         restService.sendResponse(resp, new RestResponse()
                 .setResourceUrl("POST /home")
                 .setStatus(200)
-                .setMessage(message)
+                .setMessage(message+"  Port : "+ configService.getValue("db.MySql.port").getAsInt())
                 .setMeta(Map.of(
 
                         "DataType", "object",

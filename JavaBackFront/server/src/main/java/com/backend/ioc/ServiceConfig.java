@@ -1,5 +1,7 @@
 package com.backend.ioc;
 
+import com.backend.services.config.ConfigService;
+import com.backend.services.config.JsonConfigServic;
 import com.backend.services.db.DbService;
 import com.backend.services.db.MySqlDbService;
 import com.backend.services.hash.HashService;
@@ -21,5 +23,6 @@ public class ServiceConfig extends AbstractModule {
         bind(HashService.class).to(Md5HashService.class);
         bind(KdfService.class).to(PbKdf1Service.class);
         bind(DbService.class).to(MySqlDbService.class);
+        bind(ConfigService.class).to(JsonConfigServic.class);
     }
 }
