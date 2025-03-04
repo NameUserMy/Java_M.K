@@ -15,13 +15,13 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 @Singleton
-public class JsonConfigServic implements ConfigService {
+public class JsonConfigService implements ConfigService {
 
     private final Logger logger;
     private JsonElement confiElement;
 
     @Inject
-    public JsonConfigServic(Logger logger) {
+    public JsonConfigService(Logger logger) {
         this.logger = logger;
     }
 
