@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import com.backend.dal.dao.DataContext;
 import com.backend.dal.dto.UserAccess;
-import com.backend.rest.RestService;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -38,8 +38,7 @@ public class AuthFilter implements Filter {
             throws IOException, ServletException {
 
         HttpServletRequest req = (HttpServletRequest) sreq;
-        //HttpServletResponse resp = (HttpServletResponse) sresp;
-
+    
         String authStatus;
 
         String authHeader = req.getHeader("Authorization");

@@ -13,8 +13,8 @@ public class ServletConfig extends ServletModule{
     @Override
     protected void configureServlets() {
         filter("/*").through(CharSetFilter.class);
-        filter("/*").through(AuthFilter.class);
-        //filter("/*").through(AuthJwtFilter.class);
+        //filter("/*").through(AuthFilter.class);
+        filter("/*").through(AuthJwtFilter.class);
 
 
         //!! For all servlets in project 
@@ -22,6 +22,8 @@ public class ServletConfig extends ServletModule{
         //add anatation @singleton
         serve("/home").with(HomeServlet.class);
         serve("/user").with(UserServlet.class);
+        serve("/product").with(ProductServlet.class);
+        serve("/storage/*").with(StorageServlet.class);
         serve("/random").with(RandomServlet.class);
     }
 

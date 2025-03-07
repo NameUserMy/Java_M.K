@@ -24,9 +24,10 @@ function Signin() {
             },
         }).then(data=>{
             setUser(data.user);
-            setAccessToken(data.accessToken);
-            //setAccessToken(data.jwtToken);
+            //setAccessToken(data.accessToken);
+            setAccessToken(data.jwtToken);
             navigate('/profile');
+            console.log(data);
         }).catch(console.log);
        
     }

@@ -1,7 +1,9 @@
 package com.backend.servlets;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.Base64;
+import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -17,7 +19,11 @@ import com.backend.models.UserAuthViewModel;
 import com.backend.models.UserSignUpFormModel;
 import com.backend.rest.RestResponse;
 import com.backend.rest.RestService;
+import com.backend.services.authuser.jwt.JwtToken;
+import com.backend.services.config.ConfigService;
 import com.backend.services.hash.HashService;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -30,15 +36,18 @@ import jakarta.servlet.http.HttpServletResponse;
 public class UserServlet extends HttpServlet {
     private final DataContext dataContext;
     private final RestService restService;
-    private final HashService hashService;
+    private final ConfigService configService;
+    private final JwtToken jwtTokenService;
     private final Logger logger;
 
     @Inject
-    public UserServlet(Logger logger, HashService hashService, DataContext dataContext, RestService restService) {
+    public UserServlet(Logger logger, JwtToken jwtTokenService, ConfigService configService, DataContext dataContext,
+            RestService restService) {
         this.dataContext = dataContext;
         this.restService = restService;
-        this.hashService = hashService;
-        this.logger=logger;
+        this.configService = configService;
+        this.jwtTokenService = jwtTokenService;
+        this.logger = logger;
 
     }
 
@@ -102,31 +111,33 @@ public class UserServlet extends HttpServlet {
 
         // Create token for user
 
-        AccessToken token;
-        if (!dataContext.getAccessTokenDao().prolonge(userAccess.getUserAccessId().toString())) {
+        // AccessToken token;
+        // if
+        // (!dataContext.getAccessTokenDao().prolonge(userAccess.getUserAccessId().toString()))
+        // {
 
-            token = dataContext.getAccessTokenDao().create(userAccess);
-        } else {
+        // token = dataContext.getAccessTokenDao().create(userAccess);
+        // } else {
 
-            token = dataContext.getAccessTokenDao().getTAccessToken(userAccess.getUserAccessId().toString());
-        }
+        // token =
+        // dataContext.getAccessTokenDao().getTAccessToken(userAccess.getUserAccessId().toString());
+        // }
 
         User user = dataContext.getUserDao().getUserById(userAccess.getUserId());
 
-        // String jwtHeader = new String(Base64.getUrlEncoder().encode(
-        //         "{\"alg\": \"HS256\", \"typ\": \"JWT\" }".getBytes()));
-        // String jwtPayload = new String(Base64.getUrlEncoder().encode(
-        //         restService.gson.toJson(userAccess).getBytes()));
-        // String jwtSignature = new String(Base64.getUrlEncoder().encode(
-        //         hashService.digest("secret" + jwtHeader + "." + jwtPayload).getBytes()));
-        // String jwtToken = jwtHeader + "." + jwtPayload + "." + jwtSignature;
+        JsonObject payLoad = JsonParser.parseString(restService.gson.toJson(userAccess)).getAsJsonObject();
+
+        
+        payLoad.addProperty("exp",new Date().getTime()+configService.getValue("token.lifetime").getAsInt()*1000);
+        jwtTokenService.setPayLoad(payLoad);
+        jwtTokenService.setSecretKey(configService.getValue("token.secretkey").getAsString());
 
         restResponse
                 .setCashTime(600)
                 .setStatus(200)
                 .setData(
-                         new UserAuthViewModel(user, userAccess, token)
-                        /*new UserAuthJwtModel(user, jwtToken)*/);
+                        /* new UserAuthViewModel(user, userAccess, token) */
+                        new UserAuthJwtModel(user, jwtTokenService.createJwtToken()));
         restService.sendResponse(res, restResponse);
 
     }

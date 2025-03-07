@@ -1,5 +1,8 @@
 package com.backend.servlets;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -8,6 +11,7 @@ import com.backend.dal.dto.User;
 import com.backend.models.UserSignUpFormModel;
 import com.backend.rest.RestResponse;
 import com.backend.rest.RestService;
+import com.backend.services.authuser.jwt.JwtToken;
 import com.backend.services.config.ConfigService;
 import com.backend.services.db.DbService;
 
@@ -24,25 +28,27 @@ public class HomeServlet extends HttpServlet {
     private final DataContext dataContext;
     private final RestService restService;
     private final ConfigService configService;
+    private final JwtToken jwtToken;
 
     @Inject
-    public HomeServlet(ConfigService configService,RestService restService, DataContext dataContext, DbService dbService) {
+    public HomeServlet( JwtToken jwtToken,ConfigService configService,RestService restService, DataContext dataContext, DbService dbService) {
 
         this.dataContext = dataContext;
         this.restService = restService;
         this.configService=configService;
+        this.jwtToken=jwtToken;
 
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
+       
         String message;
         message = dataContext.getUserDao().installTables()&&dataContext.getAccessTokenDao().installTables() ? "Install OK" : "Install fail";
         restService.sendResponse(resp, new RestResponse()
                 .setResourceUrl("POST /home")
                 .setStatus(200)
-                .setMessage(message+"  Port : "+ configService.getValue("db.MySql.port").getAsInt())
+                .setMessage(message )
                 .setMeta(Map.of(
 
                         "DataType", "object",

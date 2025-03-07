@@ -2,11 +2,15 @@ package com.backend.filters;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import com.backend.dal.dao.DataContext;
 import com.backend.dal.dto.UserAccess;
+import com.backend.services.authuser.jwt.JwtToken;
 import com.backend.services.hash.HashService;
 import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -21,11 +25,14 @@ import jakarta.servlet.http.HttpServletRequest;
 @Singleton
 public class AuthJwtFilter implements Filter {
     private FilterConfig filterConfig;
-    private final HashService hashService;
+
+    private final JwtToken jwtTokenService;
 
     @Inject
-    public AuthJwtFilter(HashService hashService) {
-        this.hashService = hashService;
+    public AuthJwtFilter(JwtToken jwtTokenService) {
+
+        this.jwtTokenService = jwtTokenService;
+
     }
 
     @Override
@@ -47,7 +54,7 @@ public class AuthJwtFilter implements Filter {
     }
 
     private void checkJwt(HttpServletRequest req) {
-        String secret = "secret";
+
         String authHeader = req.getHeader("Authorization");
         if (authHeader == null) {
             req.setAttribute("AuthStatus", "Authorization header required");
@@ -65,25 +72,23 @@ public class AuthJwtFilter implements Filter {
 
         String credentials = authHeader.substring(authScheme.length());
 
-        String[] parts = credentials.split("\\.");
+        if (jwtTokenService.fromJwt(credentials) == null) {
 
-        if (parts.length != 3) {
-            req.setAttribute("AuthStatus", "Token format invalid");
+            req.setAttribute("AuthStatus", "Token error");
             return;
+
         }
 
-        String header = parts[0];
-        String payload = parts[1];
-        String signature = new String(Base64.getUrlDecoder().decode(parts[2]));
-        if (!signature.equals(hashService.digest(secret + header + "." + payload))) {
+        String payload = jwtTokenService.fromJwt(credentials);
 
-            req.setAttribute("AuthStatus", "Token signuture error");
+        if (JsonParser.parseString(payload).getAsJsonObject().get("exp").getAsLong() < new Date().getTime()) {
+            req.setAttribute("AuthStatus", "Token exp fail");
             return;
+
         }
-        payload = new String(Base64.getUrlDecoder().decode(payload));
+
         UserAccess userAccess = new Gson().fromJson(payload, UserAccess.class);
         req.setAttribute("AuthStatus", "OK");
         req.setAttribute("AuthUserAccess", userAccess);
-
     }
 }

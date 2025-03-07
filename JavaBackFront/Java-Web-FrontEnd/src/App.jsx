@@ -11,27 +11,27 @@ function App() {
 
   const [user, setUser] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
-  
-  
+
+
   const request = (url, conf) => new Promise((resolve, reject) => {
     const backHost = "http://localhost:8080/server";
     //если токен есть в контексте, а в параметрах conf нету, то добовляем из контекста 
 
-    if(accessToken !=null &&  typeof(accessToken.accessTokenId)!= 'undefined'){
+    if (accessToken != null /*&&  typeof(accessToken.accessTokenId)!= 'undefined'*/) {
 
 
-      if(!conf){
+      if (!conf) {
 
-        conf={};
+        conf = {};
       }
-      if(!conf.headers){
+      if (!conf.headers) {
 
-        conf.headers={};
+        conf.headers = {};
       }
 
-      if(! conf.headers["Authorization"]){
+      if (!conf.headers["Authorization"]) {
 
-        conf.headers["Authorization"]="Bearer "+ accessToken.accessTokenId;
+        conf.headers["Authorization"] = "Bearer " + accessToken;
       }
 
     }
@@ -48,7 +48,7 @@ function App() {
   });
 
 
-  return <AppContext.Provider value={{ user, setUser ,request,accessToken,setAccessToken}}>
+  return <AppContext.Provider value={{ user, setUser, request, accessToken, setAccessToken }}>
 
     <Router>
 
