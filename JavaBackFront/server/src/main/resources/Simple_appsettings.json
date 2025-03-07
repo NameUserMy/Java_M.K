@@ -16,5 +16,9 @@
 
         "lifetime":300,
         "secretkey":"Your  Secret key for JWT"
+    },
+    "storage":{
+
+        "path":"your path storage"
     }
 }

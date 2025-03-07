@@ -1,7 +1,6 @@
 package com.backend.services.authuser.jwt;
 
 import java.util.Base64;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

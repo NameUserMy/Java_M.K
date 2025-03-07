@@ -7,19 +7,27 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
 
+import com.backend.services.config.ConfigService;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 @Singleton
 public class DiskStorageService implements StorageService {
+  
+    private final ConfigService configService;
 
-    private final String storagePath = "E:/storage/";
+    @Inject
+    public DiskStorageService(ConfigService configService) {
+        this.configService = configService;
+
+    }
 
     @Override
     public String put(InputStream inputStream, String ext) throws IOException {
 
         String itemId = UUID.randomUUID() + ext;
-        File file = new File(storagePath + itemId);
-        
+        File file = new File(configService.getValue("storage.path").getAsString() + itemId);
+
         try (FileOutputStream writer = new FileOutputStream(file)) {
             byte[] buf = new byte[131072];
             int len;
@@ -35,7 +43,7 @@ public class DiskStorageService implements StorageService {
     @Override
     public InputStream get(String itemId) throws IOException {
 
-        return new FileInputStream(storagePath + itemId);
+        return new FileInputStream(configService.getValue("storage.path").getAsString() + itemId);
     }
 
 }
