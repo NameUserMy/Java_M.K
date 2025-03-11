@@ -5,6 +5,7 @@ import Signup from "./views/Signup/Signup";
 import Signin from "./views/Signin/Signin";
 import AppContext from "./AppContext";
 import Profile from "./views/Profile/Profile";
+import Admin from "./views/Admin/Admin";
 
 
 function App() {
@@ -57,6 +58,7 @@ function App() {
         <Route path='/profile' element={<Profile />}></Route>
         <Route path='/signup' element={<Signup />} />
         <Route path='/signin' element={<Signin />} />
+        <Route path='/admin' element={<Admin />} />
       </Routes>
 
     </Router>
