@@ -1,9 +1,11 @@
 package com.backend.servlets;
 
 import java.io.IOException;
-import java.nio.file.Path;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+
 
 import org.apache.commons.fileupload2.core.FileItem;
 
@@ -14,6 +16,7 @@ import com.backend.rest.RestService;
 import com.backend.services.form_parse.FormParseResult;
 import com.backend.services.form_parse.FormParseService;
 import com.backend.services.storage.StorageService;
+import com.backend.dal.dto.Category;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -118,33 +121,31 @@ public class ProductServlet extends HttpServlet {
         }
 
         FileItem file1 = formParseResult.getFiles().get("product-image");
-   
+
         if (file1.getSize() > 0) {
             int dotPosition = file1.getName().lastIndexOf('.');
             String ext = file1.getName().substring(dotPosition);
             str = storageService.put(file1.getInputStream(), ext);
-        }else{
+        } else {
 
-            str=null;
+            str = null;
         }
 
         product.setProductImageId(str);
 
-       // product=dataContext.getProductDao().addNewProduct(product);
+        product = dataContext.getProductDao().addNewProduct(product);
 
-        if(product==null){
+        if (product == null) {
 
-            //add no commit in bd- delete file
+            // add no commit in bd- delete file
             restService.sendResponse(resp,
                     restResponse.setStatus(500).setData("Internal Error.  See logs"));
             return;
-
 
         }
 
         restService.sendResponse(resp, restResponse.setStatus(200).setData(product));
 
-      
     }
 
     @Override
@@ -163,6 +164,20 @@ public class ProductServlet extends HttpServlet {
 
     private void getCategories(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
+        String imgPath = String.format(Locale.ROOT, "%s://%s:%d%s/storage/",
+                req.getScheme(),
+                req.getServerName(),
+                req.getServerPort(),
+                req.getContextPath()
+
+        );
+        List<com.backend.dal.dto.Category> categories = dataContext.getCategoryDao().getList();
+
+        for (com.backend.dal.dto.Category c : categories) {
+
+            c.setCategoryImageId(imgPath + c.getCategoryImageId());
+        }
+
         restService.sendResponse(resp,
                 new RestResponse()
                         .setResourceUrl("GET /product?type=categories")
@@ -170,11 +185,35 @@ public class ProductServlet extends HttpServlet {
                                 "dataType", "array"))
                         .setStatus(200)
                         .setCashTime(86400)
-                        .setData(dataContext.getCategoryDao().getList()));
+                        .setData(categories)
+
+        );
 
     }
 
     private void getCategory(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        String slug = req.getParameter("slug");
+        RestResponse restResponse = new RestResponse()
+                .setResourceUrl("GET /product?type=category&slug=" + slug)
+                .setMeta(Map.of(
+                        "DataType", "object"))
+                .setCashTime(86400);
+        Category category;
+        try {
+            category = dataContext.getCategoryDao().getCategoryBySlug(slug);
+        } catch (RuntimeException ex) {
+            restService.sendResponse(resp, restResponse.setStatus(500).setData("Take a look to the logs"));
+            return;
+        }
+
+        if (category == null) {
+            restService.sendResponse(resp, restResponse.setStatus(400).setData("category not found")
+
+            );
+            return;
+        }
+        restService.sendResponse(resp, restResponse.setStatus(200).setData(category));
 
     }
 

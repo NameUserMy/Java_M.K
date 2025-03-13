@@ -3,6 +3,7 @@ package com.backend.dal.dto;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 public class Category {
@@ -14,9 +15,11 @@ public class Category {
     private String categoryImageId;
     private Date categoryDeleteMoment;
 
+    private List<Product> products;
 
 
-     public static Category fromResulSet(ResultSet rs) throws SQLException {
+   
+    public static Category fromResulSet(ResultSet rs) throws SQLException {
 
         Category Category = new Category();
 
@@ -81,4 +84,12 @@ public class Category {
         this.categoryDeleteMoment = deleteMoment;
     }
 
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
+    }
 }
+

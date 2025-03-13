@@ -1,12 +1,12 @@
-import { useContext, useState } from "react";
+import { useContext} from "react";
 import { Link } from "react-router-dom";
-import AppContext from "../../AppContext";
+import AppContext from "../../Components/AppContext";
 import { useForm } from "react-hook-form";
 import "./profile.css";
 
 function Profile() {
-    const {user} = useContext(AppContext);
-    return (<>{user == null ? <AnonView /> : <AuthView />}</>);
+    const {user,role} = useContext(AppContext);
+    return (<>{user == null || role!=='guest' ? <AnonView /> : <AuthView />}</>);
 }
 
 function AuthView() {
@@ -59,26 +59,9 @@ function AuthView() {
         console.log(user.userId, "DEL")
     };
     return (
-        <>
-            <div id='header-profile'>
-                <span className='user-info'>
-                    Your Email: {user.email}
-                </span>
-                <br />
-                <span className='user-info'>
-                    Your Name: {user.name}
-                </span>
-                <br />
-                <span className='user-info'>
-                    Your birthday:  {user.dofb}
-                </span>
-               
-
-
-            </div>
+      
+          
             <div id='content-profile'>
-            <br/>
-            <i>{JSON.stringify(accessToken)}</i>
                 <form id='form-change-profile' onSubmit={handleSubmit(saveChange)} >
                     <div>
                         <label htmlFor="username">Name</label>
@@ -127,7 +110,7 @@ function AuthView() {
 
             </div>
 
-        </>
+        
     )
 }
 

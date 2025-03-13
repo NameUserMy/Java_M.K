@@ -1,3 +1,20 @@
+:root {
+
+  --backGroungColorPlaceHolder: rgba(255, 255, 255, 0.2);
+  --borderRadiusInputForm: 0.7vh;
+  --heightInputForm: 3vh;
+
+  --borderColorGeneralElement: rgba(255, 255, 255, 0.25);
+  --borderSizeGeneralElement:0.2vh;
+  --borderStyleGeneralElement: solid;
+  --backGroundColorGeneralElement:rgba(255, 255, 255, 0.3);
+  --borderRadiusGeneralElement:2vh;
+
+
+}
+
+
+
 html,
 body {
   width: 100vw;
@@ -6,12 +23,102 @@ body {
   padding: 0;
   align-content: center;
   font-size: 1rem;
-}
-#root{
-
-width: 100vw;
-height: 100vh;
-
+  background-color: rgb(163, 160, 160);
 }
 
+#root {
 
+  width: 100vw;
+  height: 100vh;
+
+}
+
+header {
+
+  display: grid;
+  grid-template-columns: 0.5fr 1fr 0.5fr;
+  column-gap: 0.2vw;
+  height: calc(9vh - 1px);
+  width: 90vw;
+  margin: 0 auto;
+
+
+  background-color: var(--backGroundColorGeneralElement);
+  border-radius: 0vh 0vh var(--borderRadiusGeneralElement) var(--borderRadiusGeneralElement);
+  backdrop-filter: blur(10px);
+  border:var(--borderSizeGeneralElement)  var(--borderStyleGeneralElement) var(--borderColorGeneralElement);
+
+}
+
+.header-menu {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+
+
+  font-size: 1rem;
+  font-weight: 700;
+  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
+
+}
+
+.header-menu a {
+  text-decoration: none;
+  color: rgb(64, 64, 64);
+
+
+}
+
+.header-logo {
+
+  font-size: 2rem;
+  font-weight: 700;
+  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
+  text-align: center;
+  align-content: center;
+
+}
+
+
+.user-info {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.user-name {
+
+  color: rgb(64, 64, 64);
+  font-size: 1rem;
+  font-weight: 700;
+  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
+  margin-left: 0.2vw;
+
+}
+
+
+#section {
+
+  height: 90vh;
+  width: 90vw;
+  align-content: center;
+  margin: 0 auto;
+
+}
+
+
+
+
+
+
+
+
+.boxShadow {
+  box-shadow: 3px 3px 10px black, -3px -3px 10px black;
+}
+
+.text-shadow {
+  text-shadow: 1px 2px 2px grey;
+}

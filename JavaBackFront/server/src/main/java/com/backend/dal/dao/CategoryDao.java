@@ -1,5 +1,6 @@
 package com.backend.dal.dao;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -8,7 +9,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.management.RuntimeErrorException;
+
 import com.backend.dal.dto.Category;
+import com.backend.dal.dto.Product;
 import com.backend.services.db.DbService;
 import com.google.inject.Inject;
 
@@ -22,6 +26,44 @@ public class CategoryDao {
 
         this.logger = logger;
         this.dbService = dbService;
+
+    }
+
+    public Category getCategoryBySlug(String slug) {
+
+        if (slug == null) {
+            return null;
+        }
+        Category category = null;
+        String sql = "SELECT * FROM categoties c LEFT JOIN products p ON c.category_id=p.category_id WHERE c.category_slug=?";
+
+        try (PreparedStatement prep = dbService.getConnection().prepareStatement(sql)) {
+
+            prep.setString(1, slug);
+            ResultSet rs = prep.executeQuery();
+
+            if (rs.next()) {
+                category = Category.fromResulSet(rs);
+                List<Product> products = new ArrayList<>();
+                do{
+                    try {
+                        products.add(Product.fromResulSet(rs));
+                    } catch (Exception ignore) {
+                    }
+                }while(rs.next());
+                category.setProducts(products);
+               
+            }
+
+        } catch (SQLException ex) {
+
+            logger.log(Level.WARNING, "CategoryDao::CategoryBySlug {0} sql : '{1}' ",
+                    new Object[] { ex.getMessage(), sql });
+                    throw new RuntimeException(ex);
+
+        }
+
+        return category;
 
     }
 
@@ -41,8 +83,8 @@ public class CategoryDao {
 
         } catch (SQLException ex) {
 
-            logger.log(Level.WARNING, "CategoryDao::getList {0} sql : '{1}' ", 
-            new Object[] { ex.getMessage(), sql });
+            logger.log(Level.WARNING, "CategoryDao::getList {0} sql : '{1}' ",
+                    new Object[] { ex.getMessage(), sql });
 
         }
 

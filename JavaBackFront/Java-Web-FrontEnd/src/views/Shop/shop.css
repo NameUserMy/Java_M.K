@@ -1,0 +1,21 @@
+.categories {
+
+    display: flex;
+    flex-direction: row;
+
+}
+
+.category-card,
+.category-card img {
+
+    border-radius: 8px;
+}
+
+.category-card {
+
+    display: block;
+    border: 1px solid lightgray;
+
+    box-shadow: 4px 4px 3px darkgray;
+    margin: 0 10px;
+}
