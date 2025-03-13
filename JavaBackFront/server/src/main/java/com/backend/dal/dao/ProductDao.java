@@ -1,9 +1,11 @@
 package com.backend.dal.dao;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,42 +29,64 @@ public class ProductDao {
 
     }
 
-    public Product addNewProduct(Product product){
-
+    public Product addNewProduct(Product product) {
 
         product.setProductId(UUID.randomUUID());
-        
+
         String sql = "INSERT INTO products (product_id,category_id,product_title,"
-                                          +"product_description,product_slug,product_image_id,"
-                                          +"product_deleteMoment,product_price,product_stock)"
-                                          +"VALUES(?,?,?,?,?,?,?,?,?)";
+                + "product_description,product_slug,product_image_id,"
+                + "product_deleteMoment,product_price,product_stock)"
+                + "VALUES(?,?,?,?,?,?,?,?,?)";
 
+        try (PreparedStatement prep = dbService.getConnection().prepareStatement(sql)) {
 
+            prep.setString(1, product.getProductId().toString());
+            prep.setString(2, product.getCategoryId().toString());
+            prep.setString(3, product.getProductTitle());
+            prep.setString(4, product.getProductDescription());
+            prep.setString(5, product.getProductSlug());
+            prep.setString(6, product.getProductImageId());
+            prep.setTimestamp(7,
+                    product.getDeleteMoment() == null ? null : new Timestamp(product.getDeleteMoment().getTime()));
+            prep.setDouble(8, product.getPrice());
+            prep.setInt(9, product.getStrock());
 
-             try(PreparedStatement prep=dbService.getConnection().prepareStatement(sql)){
+            prep.executeUpdate();
+            dbService.getConnection().commit();
 
-                prep.setString(1, product.getProductId().toString());
-                prep.setString(2, product.getCategoryId().toString());
-                prep.setString(3, product.getProductTitle());
-                prep.setString(4, product.getProductDescription());
-                prep.setString(5, product.getProductSlug());
-                prep.setString(6, product.getProductImageId());
-                prep.setTimestamp(7, product.getDeleteMoment()==null?null: new Timestamp(product.getDeleteMoment().getTime()));
-                prep.setDouble(8, product.getPrice());
-                prep.setInt(9, product.getStrock());
+            return product;
 
-                prep.executeUpdate();
-                dbService.getConnection().commit();
+        } catch (SQLException ex) {
 
-                return product;
+            logger.log(Level.WARNING, "ProductDao::addProduct {0} sql: {1}", new Object[] { ex.getMessage(), sql });
 
-             }catch(SQLException ex){
+        }
+        return null;
+    }
 
-                logger.log(Level.WARNING, "ProductDao::addProduct {0} sql: '{1}'",new Object[]{ex.getMessage(),sql});
-                                            
-             }
-             return null;
-       
+    public boolean checkSlugCode(String slug) {
+
+        String sql = "SELECT  product_slug FROM products p WHERE p.product_slug = ?";
+
+        try (PreparedStatement prep = dbService.getConnection().prepareStatement(sql)) {
+
+            prep.setString(1, slug);
+            ResultSet rs = prep.executeQuery();
+
+            if (rs.next()) {
+                return true;
+
+            } else {
+                return false;
+            }
+
+        } catch (SQLException ex) {
+
+            logger.log(Level.WARNING, "ProductDao::checkSlugCode {0}", ex.getMessage());
+
+        }
+
+        return false;
     }
 
     public boolean installTables() {

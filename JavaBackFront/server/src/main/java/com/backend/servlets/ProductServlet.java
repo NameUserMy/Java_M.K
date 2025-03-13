@@ -6,7 +6,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
-
 import org.apache.commons.fileupload2.core.FileItem;
 
 import com.backend.dal.dao.DataContext;
@@ -77,12 +76,18 @@ public class ProductServlet extends HttpServlet {
         str = formParseResult.getFields().get("product-code");
 
         if (str == null || str.isBlank()) {
-
             restService.sendResponse(resp,
                     restResponse.setStatus(400).setData("Missing or empty 'product-code' "));
             return;
-
         }
+
+        if (dataContext.getProductDao().checkSlugCode(str)) {
+
+            restService.sendResponse(resp,
+                    restResponse.setStatus(409).setData("Conflict product code"));
+            return;
+        }
+
         product.setProductSlug(str);
 
         str = formParseResult.getFields().get("product-price");
@@ -136,10 +141,10 @@ public class ProductServlet extends HttpServlet {
         product = dataContext.getProductDao().addNewProduct(product);
 
         if (product == null) {
+            storageService.deleteImg(str);
 
-            // add no commit in bd- delete file
-            restService.sendResponse(resp,
-                    restResponse.setStatus(500).setData("Internal Error.  See logs"));
+            restService.sendResponse(resp, restResponse.setStatus(500)
+                    .setData("Internal Error.  See logs"));
             return;
 
         }

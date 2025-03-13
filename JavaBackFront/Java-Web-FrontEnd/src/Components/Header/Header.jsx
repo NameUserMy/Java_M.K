@@ -23,6 +23,7 @@ const Header = () => {
                 <Link to="/signup">Sign Up</Link>
                 <Link to="/signin">Sign In</Link>
                 <Link to="/shop">Shop</Link>
+                <Link to="/admin">Admin</Link>
             </div>
         </header>
     );

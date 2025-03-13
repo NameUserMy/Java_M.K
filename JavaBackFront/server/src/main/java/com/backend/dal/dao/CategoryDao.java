@@ -57,7 +57,7 @@ public class CategoryDao {
 
         } catch (SQLException ex) {
 
-            logger.log(Level.WARNING, "CategoryDao::CategoryBySlug {0} sql : '{1}' ",
+            logger.log(Level.WARNING, "CategoryDao::CategoryBySlug {0} sql : {1} ",
                     new Object[] { ex.getMessage(), sql });
                     throw new RuntimeException(ex);
 
@@ -83,7 +83,7 @@ public class CategoryDao {
 
         } catch (SQLException ex) {
 
-            logger.log(Level.WARNING, "CategoryDao::getList {0} sql : '{1}' ",
+            logger.log(Level.WARNING, "CategoryDao::getList {0} sql : {1} ",
                     new Object[] { ex.getMessage(), sql });
 
         }
