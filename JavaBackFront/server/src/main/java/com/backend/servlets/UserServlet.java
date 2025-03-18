@@ -137,7 +137,7 @@ public class UserServlet extends HttpServlet {
                 .setStatus(200)
                 .setData(
                         /* new UserAuthViewModel(user, userAccess, token) */
-                        new UserAuthJwtModel(user, jwtTokenService.createJwtToken()));
+                        new UserAuthJwtModel(user, jwtTokenService.createJwtToken(),dataContext.getCartDao().getUserCart(userAccess.getUserAccessId(), false)));
         restService.sendResponse(res, restResponse);
 
     }

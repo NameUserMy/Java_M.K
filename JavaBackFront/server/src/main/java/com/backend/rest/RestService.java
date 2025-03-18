@@ -7,10 +7,11 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
 public class RestService {
-    public final Gson gson = new Gson();
+    public final Gson gson = new GsonBuilder().serializeNulls().create();
 
     public void sendResponse(HttpServletResponse resp, RestResponse restResponse) throws IOException {
         resp.setContentType("application/json");

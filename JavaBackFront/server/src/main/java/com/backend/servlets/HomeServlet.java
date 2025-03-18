@@ -46,7 +46,8 @@ public class HomeServlet extends HttpServlet {
         String message;
         message = dataContext.getUserDao().installTables()&&dataContext.getAccessTokenDao().installTables()
         &&dataContext.getCategoryDao().installTables() 
-        &&dataContext.getProductDao().installTables() ? "Install OK" : "Install fail";
+        &&dataContext.getProductDao().installTables() 
+        &&dataContext.getCartDao().installCarts()? "Install OK" : "Install fail";
         restService.sendResponse(resp, new RestResponse()
                 .setResourceUrl("POST /home")
                 .setStatus(200)

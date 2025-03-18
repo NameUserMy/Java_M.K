@@ -6,6 +6,7 @@ import AppContext from "../../Components/AppContext";
 export default function Home() {
 
     const [user, setUser] = useState(null);
+    const [cart, setCart] = useState(null);
     const [accessToken, setAccessToken] = useState(null);
     const [role, setRole] = useState(null);
 
@@ -45,11 +46,9 @@ export default function Home() {
 
     return (
 
-        <AppContext.Provider value={{ user, setUser,role, setRole, request, accessToken, setAccessToken }} >
+        <AppContext.Provider value={{ user, setUser, role, cart, setCart,setRole, request, accessToken, setAccessToken }} >
             <Header />
-            <section id='section'>
-                <Outlet />
-            </section>
+            <Outlet />
         </AppContext.Provider>
     );
 

@@ -1,19 +1,19 @@
 dl a{
     text-decoration: none;
-    color: dimgrey;
+    color: rgb(180, 180, 180);
     text-shadow: 1px 1px 2px black;
-    font-size: 3vh;
+    font-size: 1.5vh;
     
 }
 dl{
     margin-left: 2vw;
     
 }
-dt{
+/* dt{
     background-color: rgb(146, 145, 145);
     width: 8vw;
     text-align: center;
     padding: 0.5vh;
     margin-top: 0.5vh;
     border-radius: 2vh;
-}
+} */

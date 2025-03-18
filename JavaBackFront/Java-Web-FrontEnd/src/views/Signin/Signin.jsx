@@ -14,7 +14,7 @@ function Signin() {
         defaultValues: { email: '', password: '' }
     });
 
-    const { setAccessToken, setUser, request, setRole } = useContext(AppContext);
+    const { setAccessToken, setUser, request, setRole,setCart } = useContext(AppContext);
 
     const sendForm = (data) => {
         //rfc7617

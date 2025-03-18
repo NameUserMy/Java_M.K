@@ -3,7 +3,7 @@ import { useContext} from "react";
 import AppContext from "../AppContext";
 
 const Header = () => {
-    const { user } = useContext(AppContext);
+    const { user,cart } = useContext(AppContext);
 
     return (
         <header className="boxShadow" >
@@ -17,6 +17,7 @@ const Header = () => {
                 <span className="user-name">
                     Hello, {user?user.name:"You need to login or registration"}.
                 </span>
+                <h1> cart:{JSON.stringify(cart)}</h1>
             </div>
 
             <div className='header-menu'>

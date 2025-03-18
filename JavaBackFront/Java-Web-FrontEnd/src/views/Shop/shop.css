@@ -1,21 +1,34 @@
-.categories {
 
-    display: flex;
-    flex-direction: row;
+
+#shop-wraper {
+
+    width: 90vw;
+    display: grid;
+    grid-template-columns: 20vw 69vw;
+    column-gap: 1vw;
+    background-color: rgb(32, 32, 32);
+    border-radius: var(--borderRadiusGeneralElement);
+    margin: 0 auto;
 
 }
 
-.category-card,
-.category-card img {
+#shop-menu {
 
-    border-radius: 8px;
+    background-color: var(--backGroundColorGeneralElement);
+    border-radius: var(--borderRadiusGeneralElement) 0vh 0vh var(--borderRadiusGeneralElement);
+    backdrop-filter: blur(10px);
+    border: var(--borderSizeGeneralElement) var(--borderStyleGeneralElement) var(--borderColorGeneralElement);
 }
 
-.category-card {
 
-    display: block;
-    border: 1px solid lightgray;
 
-    box-shadow: 4px 4px 3px darkgray;
-    margin: 0 10px;
+
+
+#shop-content {
+
+    background-color: var(--backGroundColorGeneralElement);
+    border-radius: 0vh var(--borderRadiusGeneralElement) var(--borderRadiusGeneralElement) 0vh;
+    backdrop-filter: blur(10px);
+    border: var(--borderSizeGeneralElement) var(--borderStyleGeneralElement) var(--borderColorGeneralElement);
+    align-content: center;
 }

@@ -1,10 +1,12 @@
-import { useContext, useEffect, useState } from "react";
-import AppContext from "../../Components/AppContext";
+
+import { useContext, useEffect, useState } from 'react';
 import './shop.css';
-import { Link } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
+import AppContext from '../../Components/AppContext';
 
 export default function Shop() {
     const [categories, setCatigories] = useState([]);
+
     const { request } = useContext(AppContext);
 
     useEffect(() => {
@@ -18,19 +20,31 @@ export default function Shop() {
 
     return (
 
-        <>
-            <h1>Shop</h1>
-            <div className='categories' >
 
-                {categories.map(
-                    c => <Link to={"/category/"+c.categorySlug} key={c.categoryId} className="category-card">
-                        <img  src={c.categoryImageId} alt="logo"  />
-                        {c.categoryTitle}
-                    </Link>
-                )}
+        <section id='shop-wraper' className="boxShadow">
+            <nav id='shop-menu'>
+                <dl>
+                    <Link to="/shop/categories"><dt>All categories</dt></Link>
 
-            </div>
-        </>
+                    {categories.map(
+                        c => <Link to={"/shop/category/" + c.categorySlug} key={c.categoryId} >
+                            <dd>{c.categoryTitle}</dd>
+                        </Link>
+                    )}
+
+
+                </dl>
+
+            </nav>
+            <section id='shop-content'>
+
+                <Outlet />
+
+            </section>
+        </section>
+
+
+
 
     );
 }

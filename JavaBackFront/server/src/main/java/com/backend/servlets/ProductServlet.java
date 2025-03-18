@@ -1,6 +1,7 @@
 package com.backend.servlets;
 
 import java.io.IOException;
+import java.net.http.HttpRequest;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -169,13 +170,7 @@ public class ProductServlet extends HttpServlet {
 
     private void getCategories(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        String imgPath = String.format(Locale.ROOT, "%s://%s:%d%s/storage/",
-                req.getScheme(),
-                req.getServerName(),
-                req.getServerPort(),
-                req.getContextPath()
-
-        );
+        String imgPath = getStoragePath(req);
         List<com.backend.dal.dto.Category> categories = dataContext.getCategoryDao().getList();
 
         for (com.backend.dal.dto.Category c : categories) {
@@ -218,6 +213,16 @@ public class ProductServlet extends HttpServlet {
             );
             return;
         }
+
+        String imgPath = getStoragePath(req);
+        category.setCategoryImageId(imgPath+category.getCategoryImageId());
+
+        for(Product p : category.getProducts()){
+
+            p.setProductImageId(imgPath+p.getProductImageId());
+
+        }
+
         restService.sendResponse(resp, restResponse.setStatus(200).setData(category));
 
     }
@@ -226,4 +231,20 @@ public class ProductServlet extends HttpServlet {
 
     }
 
+    private String getStoragePath(HttpServletRequest req) {
+
+      return  String.format(Locale.ROOT, "%s://%s:%d%s/storage/",
+                req.getScheme(),
+                req.getServerName(),
+                req.getServerPort(),
+                req.getContextPath()
+
+        );
+
+    }
+
+    @Override
+    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        restService.setCorsHeaders(resp);
+    }
 }
