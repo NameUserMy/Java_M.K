@@ -20,7 +20,6 @@ export default function Shop() {
 
     return (
 
-
         <section id='shop-wraper' className="boxShadow">
             <nav id='shop-menu'>
                 <dl>
@@ -31,10 +30,7 @@ export default function Shop() {
                             <dd>{c.categoryTitle}</dd>
                         </Link>
                     )}
-
-
                 </dl>
-
             </nav>
             <section id='shop-content'>
 
@@ -42,9 +38,5 @@ export default function Shop() {
 
             </section>
         </section>
-
-
-
-
     );
 }

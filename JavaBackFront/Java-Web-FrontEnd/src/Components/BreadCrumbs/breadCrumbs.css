@@ -1,0 +1,28 @@
+.crumbs a{
+    
+    color: rgb(180, 180, 180);
+    text-shadow: 1px 1px 2px black;
+    font-size: 2vh;
+    
+}
+
+
+.crumbs :nth-last-child(-n + 1){
+    
+    color: black;
+    font-size: 1.7vh;
+    font-weight: 700;
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
+    user-select: none;
+    pointer-events: none
+}
+
+.crumbs{
+    
+    color: black;
+    font-size: 1.3vh;
+    font-weight: 700;
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
+    user-select: none;
+}
+

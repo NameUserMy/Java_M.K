@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import AppContext from "../../../Components/AppContext";
 import './category.css';
+import BreadCrumbs from "../../../Components/BreadCrumbs/BreadCrumbs";
 
 export default function Categoty() {
 
@@ -24,6 +25,8 @@ export default function Categoty() {
             .then(setCatigory)
             .catch(console.log);
 
+        console.log(category.products);
+
 
     }, [id])
 
@@ -31,25 +34,26 @@ export default function Categoty() {
 
     return (
         <div id='category-wraper' >
-            <div>brad</div>
+            <BreadCrumbs link={id} />
 
             <div className="category-info">
                 <div className="category-details">
+
                     <span>
-                         {category.categoryTitle}
+                        {category.categoryTitle}
                     </span>
                     <span>
                         {category.categoryDescription}
                     </span>
                     <span>
-                    Found  {category.products.length} products
+                        Found  {category.products.length} products
                     </span>
 
                 </div>
-                <img src={category.categoryImageId}  alt="categoryImage"/>
+                <img src={category.categoryImageId} alt="categoryImage" />
             </div>
             <div className="product-cards-content">
-                {category.products.map(p => <ProducCard key={p.productId} product={p} />)}
+                {category.products.map(p => <ProducCard key={p.ProductId} product={p} />)}
             </div >
 
 
