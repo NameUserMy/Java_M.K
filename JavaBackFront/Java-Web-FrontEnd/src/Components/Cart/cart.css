@@ -1,0 +1,19 @@
+.product-count {
+    background-color: green;
+    text-align: center;
+    align-content: center;
+    border-radius: 1vh;
+    width: 1vw;
+    height: 2vh;
+    position: absolute;
+    right: -0.7vw;
+    user-select: none;
+    
+}
+
+.cart {
+    width: 2.5vw;
+    text-align: center;
+    align-content: center;
+    position: relative;
+}

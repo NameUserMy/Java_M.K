@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useContext} from "react";
 import AppContext from "../AppContext";
+import Cart from "../Cart/Cart";
 
 const Header = () => {
     const { user,cart } = useContext(AppContext);
@@ -17,7 +18,9 @@ const Header = () => {
                 <span className="user-name">
                     Hello, {user?user.name:"You need to login or registration"}.
                 </span>
-                <h1> cart:{JSON.stringify(cart)}</h1>
+
+                <Cart />
+                {/* <h1> cart:{JSON.stringify(cart)}</h1> */}
             </div>
 
             <div className='header-menu'>
