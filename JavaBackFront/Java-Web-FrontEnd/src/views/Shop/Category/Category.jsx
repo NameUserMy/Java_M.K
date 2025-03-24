@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { data, Link, useNavigate, useParams } from "react-router-dom";
 import AppContext from "../../../Components/AppContext";
 import './category.css';
 import BreadCrumbs from "../../../Components/BreadCrumbs/BreadCrumbs";
@@ -64,11 +64,37 @@ export default function Categoty() {
 }
 function ProducCard({ product }) {
 
+    const { accessToken, request,setCart } = useContext(AppContext);
+
+    const  navigate  = useNavigate();
+
+
     const tocartClick = (e) => {
         e.stopPropagation();
         e.preventDefault();
+        if (!accessToken) {
 
-        console.log(product.ProductTitle);
+            if (confirm("Login please")) {
+
+                navigate("/signin");
+
+            } else {
+
+                return;
+            };
+        }
+
+        console.log(product.ProductId);
+
+        request("/cart", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: "productId=" + product.ProductId
+        })
+        .then(setCart)
+        .catch(console.error);
 
     };
 

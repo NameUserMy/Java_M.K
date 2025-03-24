@@ -40,7 +40,7 @@ function Signin() {
                 navigate('/admin');
             }
 
-            console.log(data);
+            setCart(data.cart);
         }).catch(console.log);
 
     }

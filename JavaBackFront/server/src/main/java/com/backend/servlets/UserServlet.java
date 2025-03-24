@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import com.backend.dal.dao.DataContext;
 import com.backend.dal.dto.AccessToken;
+import com.backend.dal.dto.Cart;
 import com.backend.dal.dto.User;
 import com.backend.dal.dto.UserAccess;
 import com.backend.models.UserAuthJwtModel;
@@ -132,12 +133,19 @@ public class UserServlet extends HttpServlet {
         jwtTokenService.setPayLoad(payLoad);
         jwtTokenService.setSecretKey(configService.getValue("token.secretkey").getAsString());
 
+        Cart activeCart=dataContext.getCartDao().getUserCart(userAccess.getUserAccessId(), false); 
+
+        if(activeCart!=null){
+         activeCart=  dataContext.getCartDao().geCart(activeCart.getUcardId());
+
+        }
+
         restResponse
                 .setCashTime(600)
                 .setStatus(200)
                 .setData(
                         /* new UserAuthViewModel(user, userAccess, token) */
-                        new UserAuthJwtModel(user, jwtTokenService.createJwtToken(),dataContext.getCartDao().getUserCart(userAccess.getUserAccessId(), false)));
+                        new UserAuthJwtModel(user, jwtTokenService.createJwtToken(),activeCart));
         restService.sendResponse(res, restResponse);
 
     }
